@@ -165,13 +165,16 @@ class Controller(cmd.Cmd):
                                                                                           yellow(THRESHOLD_THINK_TIME),
                                                                                           yellow(self.num)))
 
-        self.output('算式       错误次数 计算时间(秒)')
+        self.output('+------------+---------+------------+')
+        self.output('|    算式    | 错误次数|计算时间(秒)|')
+        self.output('+------------+---------+------------+')
         for i in range(self.num):
-            self.output('%s %s %s = ?      %s     %s' % (self.q_and_a[i][0],
-                                                         self.q_and_a[i][1],
-                                                         self.q_and_a[i][2],
-                                                         self.q_and_a[i][5],
-                                                         self.q_and_a[i][6]))
+            self.output('| %2s %s %s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][0],
+                                                                      self.q_and_a[i][1],
+                                                                      self.q_and_a[i][2],
+                                                                      self.q_and_a[i][5],
+                                                                      self.q_and_a[i][6]))
+        self.output('+------------+---------+------------+')
         return
 
     def review(self, arg):
