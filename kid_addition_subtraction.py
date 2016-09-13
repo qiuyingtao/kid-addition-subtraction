@@ -170,10 +170,10 @@ class Controller(cmd.Cmd):
         self.output('+------------+---------+------------+')
         for i in range(self.num):
             self.output('| %2s %s %s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][0],
-                                                                      self.q_and_a[i][1],
-                                                                      self.q_and_a[i][2],
-                                                                      self.q_and_a[i][5],
-                                                                      self.q_and_a[i][6]))
+                                                                        self.q_and_a[i][1],
+                                                                        self.q_and_a[i][2],
+                                                                        self.q_and_a[i][5],
+                                                                        self.q_and_a[i][6]))
         self.output('+------------+---------+------------+')
         return
 
