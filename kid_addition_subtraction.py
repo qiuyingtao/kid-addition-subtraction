@@ -164,8 +164,14 @@ class Controller(cmd.Cmd):
         self.output('本轮训练完毕,计算错误超过%s次或计算时间超过%s秒的题目共有%s道,题目如下:' % (yellow(THRESHOLD_WRONG_COUNT),
                                                                                           yellow(THRESHOLD_THINK_TIME),
                                                                                           yellow(self.num)))
+
+        self.output('算式       错误次数 计算时间(秒)')
         for i in range(self.num):
-            self.output('%s %s %s =' % (self.q_and_a[i][0], self.q_and_a[i][1], self.q_and_a[i][2]))
+            self.output('%s %s %s = ?      %s     %s' % (self.q_and_a[i][0],
+                                                         self.q_and_a[i][1],
+                                                         self.q_and_a[i][2],
+                                                         self.q_and_a[i][5],
+                                                         self.q_and_a[i][6]))
         return
 
     def review(self, arg):
