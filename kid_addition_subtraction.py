@@ -134,6 +134,7 @@ class Controller(cmd.Cmd):
         self.each_end_time = None
         self.counter = None
         self.num = self.question_num
+        self.start = False
         self.intro = green(KID_NAME) + green('加减法学习小程序,作者:') + green(AUTHOR) + '\n' + green('输入') + white('help') + green('获得帮助信息')
 
     def output(self, stuff):
@@ -142,14 +143,17 @@ class Controller(cmd.Cmd):
                 stuff = stuff.encode('utf-8')
             self.stdout.write(stuff + '\n')
 
+    def print_question(self, arg):
+        self.output('第%s题: %s %s %s %s' % (self.counter + 1,
+                                            cyan(self.q_and_a[self.counter][0]),
+                                            cyan(self.q_and_a[self.counter][1]),
+                                            cyan(self.q_and_a[self.counter][2]),
+                                            cyan(self.q_and_a[self.counter][3])))
+
     def next_question(self, arg):
         self.counter += 1
         self.q_and_a[self.counter][5] = -1
-        self.output('第%s题: %s %s %s %s' % (self.counter + 1,
-                                             cyan(self.q_and_a[self.counter][0]),
-                                             cyan(self.q_and_a[self.counter][1]),
-                                             cyan(self.q_and_a[self.counter][2]),
-                                             cyan(self.q_and_a[self.counter][3])))
+        self.print_question(arg)
         self.each_start_time = datetime.datetime.now()
 
     def statistics(self, arg):
@@ -189,6 +193,7 @@ class Controller(cmd.Cmd):
         all_duration = self.all_end_time - self.all_start_time
         all_seconds = all_duration.seconds
         self.output('本次训练结束,总共花了%s分%s秒' % (purple(all_seconds/60), purple(all_seconds%60)))
+        self.start = False
         return
 
     def countdown(self, arg):
@@ -253,6 +258,7 @@ class Controller(cmd.Cmd):
         else:
             difficulty = '20以内'
 
+        self.start = True
         self.num = self.question_num
         self.counter = -1
         self.output('%s,本次训练是%s道%s的%s题' % (KID_NAME, purple(self.question_num), purple(difficulty), purple(operator)))
@@ -294,14 +300,14 @@ class Controller(cmd.Cmd):
             self.q_and_a[self.counter][5] += 1
             self.do_shell('clear')
             self.output(KID_NAME + ',答错了呦~~再来!')
-            self.output('第%s题: %s %s %s %s' % (self.counter + 1,
-                                                cyan(self.q_and_a[self.counter][0]),
-                                                cyan(self.q_and_a[self.counter][1]),
-                                                cyan(self.q_and_a[self.counter][2]),
-                                                cyan(self.q_and_a[self.counter][3])))
+            self.print_question(arg)
         return
 
     def do_help(self, arg):
+        if self.start:
+            self.print_question(arg)
+            return
+
         self.output("""Command: (To quit, type ^D or use the quit command)
 N(umber)            -- N number (例如: N 10) (解释: 本次训练题量设为10道)
 O(perator)          -- O [a(ddition)|s(ubtraction)|m(ixture)] (例如: O a) (解释: 本次训练类型设为加法)
