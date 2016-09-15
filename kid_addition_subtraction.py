@@ -286,7 +286,7 @@ class Controller(cmd.Cmd):
         if int(arg) == self.q_and_a[self.counter][4]:
             self.each_end_time = datetime.datetime.now()
             self.do_shell('clear')
-            self.output(KID_NAME + ',你真棒!')
+            self.output(green(KID_NAME + ',你真棒!'))
             self.q_and_a[self.counter][5] += 1
             each_duration = self.each_end_time - self.each_start_time
             self.q_and_a[self.counter][6] = each_duration.seconds
@@ -303,7 +303,7 @@ class Controller(cmd.Cmd):
         else:
             self.q_and_a[self.counter][5] += 1
             self.do_shell('clear')
-            self.output(KID_NAME + ',答错了呦~~再来!')
+            self.output(red(KID_NAME + ',答错了呦~~再来!'))
             self.print_question(arg)
         return
 
