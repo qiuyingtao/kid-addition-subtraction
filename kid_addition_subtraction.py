@@ -332,6 +332,7 @@ S(tart)             -- """)
         return True
 
     def precmd(self, line):
+        line = line.strip()
         if is_nubmer_or_empty_string(line):
             line = 'e ' + line
         return line
