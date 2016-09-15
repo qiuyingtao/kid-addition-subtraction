@@ -274,9 +274,13 @@ class Controller(cmd.Cmd):
             return
         if not is_nubmer_or_empty_string(arg):
             self.output(red('请输入数字!'))
+            if self.start:
+                self.print_question(arg)
             return
         if arg == '':
             self.output(red('请输入答案!'))
+            if self.start:
+                self.print_question(arg)
             return
 
         if int(arg) == self.q_and_a[self.counter][4]:
