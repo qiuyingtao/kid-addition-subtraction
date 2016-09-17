@@ -7,6 +7,7 @@ import datetime
 import time
 import random
 import subprocess
+import re
 from style import use_style
 
 KID_NAME = '推推大人'
@@ -211,6 +212,9 @@ class Controller(cmd.Cmd):
 
     def do_N(self, arg):
         if arg == '':
+            self.output(red('请输入本次训练的题目数量'))
+            return
+        if re.match('0+', arg.strip()):
             self.output(red('请输入本次训练的题目数量'))
             return
         if not is_nubmer_or_empty_string(arg):
