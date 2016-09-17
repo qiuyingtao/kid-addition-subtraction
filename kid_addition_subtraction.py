@@ -7,7 +7,6 @@ import datetime
 import time
 import random
 import subprocess
-import re
 from style import use_style
 
 KID_NAME = '推推大人'
@@ -211,19 +210,26 @@ class Controller(cmd.Cmd):
         self.output(KID_NAME + ',开始喽,加油!!!')
 
     def do_N(self, arg):
+        arg = arg.strip()
+        left_zero_number = 0
+        for i in arg:
+            if i != '0':
+                break
+            left_zero_number += 1
+        arg = arg[left_zero_number:]
         if arg == '':
-            self.output(red('请输入本次训练的题目数量'))
-            return
-        if re.match('0+', arg.strip()):
             self.output(red('请输入本次训练的题目数量'))
             return
         if not is_nubmer_or_empty_string(arg):
             self.output(red('请输入数字!'))
             return
+        elif len(arg) > 3:
+            self.output(red('每次训练的题目数量最多为999道'))
+            return
         else:
             self.question_num = int(arg)
             #self.num = self.question_num
-            self.output('已把本次训练设为%s道题' % purple(arg))
+            self.output('已把本次训练的题目数量设为%s道' % purple(arg))
             return
 
     def do_O(self, arg):
