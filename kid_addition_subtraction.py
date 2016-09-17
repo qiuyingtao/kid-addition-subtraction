@@ -130,6 +130,8 @@ class Controller(cmd.Cmd):
         self.difficulty = DEFAULT_DIFFICULTY
         self.all_start_time = None
         self.all_end_time = None
+        self.round_start_time = None
+        self.round_end_time = None
         self.each_start_time = None
         self.each_end_time = None
         self.counter = None
@@ -157,34 +159,39 @@ class Controller(cmd.Cmd):
         self.each_start_time = datetime.datetime.now()
 
     def statistics(self, arg):
+        last_round_num = self.num
         temp_q_and_a = []
         for i in range(self.num):
             if self.q_and_a[i][5] >= THRESHOLD_WRONG_COUNT or self.q_and_a[i][6] >= THRESHOLD_THINK_TIME:
                 temp_q_and_a.append(self.q_and_a[i])
         self.num = len(temp_q_and_a)
-        if self.num == 0:
-            return
+        round_duration = self.round_end_time - self.round_start_time
+        round_seconds = round_duration.seconds / last_round_num
         self.q_and_a = temp_q_and_a
-        self.output('本轮训练完毕,计算错误超过%s次或计算时间超过%s秒的题目共有%s道,题目如下:' % (yellow(THRESHOLD_WRONG_COUNT),
-                                                                                          yellow(THRESHOLD_THINK_TIME),
-                                                                                          yellow(self.num)))
-
-        self.output('+------------+---------+------------+')
-        self.output('|    算式    | 错误次数|计算时间(秒)|')
-        self.output('+------------+---------+------------+')
-        for i in range(self.num):
-            self.output('| %2s %s %s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][0],
-                                                                        self.q_and_a[i][1],
-                                                                        self.q_and_a[i][2],
-                                                                        self.q_and_a[i][5],
-                                                                        self.q_and_a[i][6]))
-        self.output('+------------+---------+------------+')
+        if self.num > 0:
+            self.output('本轮训练完毕,平均每道题用时%s秒,计算错误超过%s次或计算时间超过%s秒的题目共有%s道,题目如下:' % (purple(round_seconds),
+                                                                                                               yellow(THRESHOLD_WRONG_COUNT),
+                                                                                                               yellow(THRESHOLD_THINK_TIME),
+                                                                                                               yellow(self.num)))
+            self.output('+------------+---------+------------+')
+            self.output('|    算式    | 错误次数|计算时间(秒)|')
+            self.output('+------------+---------+------------+')
+            for i in range(self.num):
+                self.output('| %2s %s %s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][0],
+                                                                            self.q_and_a[i][1],
+                                                                            self.q_and_a[i][2],
+                                                                            self.q_and_a[i][5],
+                                                                            self.q_and_a[i][6]))
+            self.output('+------------+---------+------------+')
+        else:
+            self.output('本轮训练完毕,平均每道题用时%s秒,计算过程与计算结果全部符合要求' % purple(round_seconds))
         return
 
     def review(self, arg):
         self.output('再试试刚才那轮中计算错误或时间偏长的题吧')
         self.counter = -1
         self.countdown(5)
+        self.round_start_time = datetime.datetime.now()
         self.next_question(self)
         return
 
@@ -266,6 +273,7 @@ class Controller(cmd.Cmd):
         self.q_and_a = prepare_question(self.question_num, self.operator, self.difficulty)
         self.countdown(5)
         self.all_start_time = datetime.datetime.now()
+        self.round_start_time = self.all_start_time
         self.next_question(self)
 
     def do_e(self, arg):
@@ -294,6 +302,7 @@ class Controller(cmd.Cmd):
             each_duration = self.each_end_time - self.each_start_time
             self.q_and_a[self.counter][6] = each_duration.seconds
             if self.counter + 1 == self.num:
+                self.round_end_time = datetime.datetime.now()
                 self.do_shell('clear')
                 self.statistics(self)
                 if self.num == 0:
