@@ -6,24 +6,28 @@ import string
 import datetime
 import time
 import random
+import ConfigParser
 import subprocess
 from style import use_style
 
-KID_NAME = '推推大人'
-AUTHOR = '爸爸'
+cf = ConfigParser.ConfigParser()
+cf.read('config.ini')
+
+KID_NAME = cf.get('name', 'kid_name')
+AUTHOR = cf.get('name', 'author')
+
+DEFAULT_QUESTION_NUMBER = cf.getint('default', 'question_number')
+DEFAULT_OPERATOR = cf.get('default', 'operator')
+DEFAULT_DIFFICULTY = cf.get('default', 'difficulty')
+
+THRESHOLD_WRONG_COUNT = cf.getint('threshold', 'wrong_count')
+THRESHOLD_THINK_TIME = cf.getint('threshold', 'think_time')
 
 ADDITION = 'a'
 SUBTRACTION = 's'
 MIXTURE = 'm'
 EASY = 'e'
 HARD = 'h'
-
-DEFAULT_QUESTION_NUMBER = 100
-DEFAULT_OPERATOR = ADDITION
-DEFAULT_DIFFICULTY = EASY
-
-THRESHOLD_WRONG_COUNT = 1
-THRESHOLD_THINK_TIME = 13
 
 
 def red(zfc):
