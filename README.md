@@ -7,8 +7,8 @@ Usage:
 1. Install python 2.7
 2. Download py files and ini file, then open a command line window
 3. Input ```python kid-addition-subtraction.py``` and enter
-4. Input ```help``` and enter for help detail
-5. Input ```S``` and enter to start a training
+4. Input ```help``` and click enter for help detail
+5. Input ```S``` and click enter to start a training
 
 Features:
 
@@ -20,7 +20,9 @@ Config:
 * Customize question number. such as: ```N 100``` or ```N 200```
 * Customize addition only or subtraction only or mixture. such as: ```O a``` or ```O s``` or ```O m```
 * Customize <10 or <20. such as: ```D e``` or ```D h```
-* Customize kid name/author/wrong count/think time by editing config.ini file
+* Customize review threshold about wrong count. such as: ```W 1``` or ```W 2```
+* Customize review threshold about think time. such as: ```T 10``` or ```T 13```
+* Customize kid name/author, and set default value of question number/operator/difficulty/threshold wrong count/threshold think time by editing config.ini file
 
 note:
 
