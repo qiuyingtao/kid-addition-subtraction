@@ -19,9 +19,8 @@ AUTHOR = cf.get('name', 'author')
 DEFAULT_QUESTION_NUMBER = cf.getint('default', 'question_number')
 DEFAULT_OPERATOR = cf.get('default', 'operator')
 DEFAULT_DIFFICULTY = cf.get('default', 'difficulty')
-
-THRESHOLD_WRONG_COUNT = cf.getint('threshold', 'wrong_count')
-THRESHOLD_THINK_TIME = cf.getint('threshold', 'think_time')
+DEFAULT_THRESHOLD_WRONG_COUNT = cf.getint('default', 'threshold_wrong_count')
+DEFAULT_THRESHOLD_THINK_TIME = cf.getint('default', 'threshold_think_time')
 
 ADDITION = 'a'
 SUBTRACTION = 's'
@@ -56,6 +55,15 @@ def cyan(zfc):
 
 def white(zfc):
     return use_style(zfc, fore='white')
+
+
+def remove_left_zero(num):
+    left_zero_number = 0
+    for i in num:
+        if i != '0':
+            break
+        left_zero_number += 1
+    return num[left_zero_number:]
 
 
 def is_nubmer_or_empty_string(num):
@@ -94,32 +102,35 @@ def subtract(difficulty):
 
 
 def prepare_question(num, operator, difficulty):
-    q_and_a = [['=' for col in range(7)] for row in range(int(num))]
+    q_and_a = [['=' for col in range(8)] for row in range(int(num))]
     if operator == ADDITION:
         for i in range(num):
             a, b, c = add(difficulty)
-            q_and_a[i][0] = a
-            q_and_a[i][1] = '+'
-            q_and_a[i][2] = b
-            q_and_a[i][4] = c
+            q_and_a[i][0] = i + 1
+            q_and_a[i][1] = a
+            q_and_a[i][2] = '+'
+            q_and_a[i][3] = b
+            q_and_a[i][5] = c
     elif operator == SUBTRACTION:
         for i in range(num):
             a, b, c = subtract(difficulty)
-            q_and_a[i][0] = a
-            q_and_a[i][1] = '-'
-            q_and_a[i][2] = b
-            q_and_a[i][4] = c
+            q_and_a[i][0] = i + 1
+            q_and_a[i][1] = a
+            q_and_a[i][2] = '-'
+            q_and_a[i][3] = b
+            q_and_a[i][5] = c
     else:
         for i in range(num):
             if random.randint(0, 1):
                 a, b, c = add(difficulty)
-                q_and_a[i][1] = '+'
+                q_and_a[i][2] = '+'
             else:
                 a, b, c = subtract(difficulty)
-                q_and_a[i][1] = '-'
-            q_and_a[i][0] = a
-            q_and_a[i][2] = b
-            q_and_a[i][4] = c
+                q_and_a[i][2] = '-'
+            q_and_a[i][0] = i + 1
+            q_and_a[i][1] = a
+            q_and_a[i][3] = b
+            q_and_a[i][5] = c
 
     return q_and_a
 
@@ -132,6 +143,8 @@ class Controller(cmd.Cmd):
         self.question_num = DEFAULT_QUESTION_NUMBER
         self.operator = DEFAULT_OPERATOR
         self.difficulty = DEFAULT_DIFFICULTY
+        self.threshold_wrong_count = DEFAULT_THRESHOLD_WRONG_COUNT
+        self.threshold_think_time = DEFAULT_THRESHOLD_THINK_TIME
         self.all_start_time = None
         self.all_end_time = None
         self.round_start_time = None
@@ -150,15 +163,15 @@ class Controller(cmd.Cmd):
             self.stdout.write(stuff + '\n')
 
     def print_question(self, arg):
-        self.output('第%s题: %s %s %s %s' % (self.counter + 1,
-                                            cyan(self.q_and_a[self.counter][0]),
+        self.output('第%s题: %s %s %s %s' % (self.q_and_a[self.counter][0],
                                             cyan(self.q_and_a[self.counter][1]),
                                             cyan(self.q_and_a[self.counter][2]),
-                                            cyan(self.q_and_a[self.counter][3])))
+                                            cyan(self.q_and_a[self.counter][3]),
+                                            cyan(self.q_and_a[self.counter][4])))
 
     def next_question(self, arg):
         self.counter += 1
-        self.q_and_a[self.counter][5] = -1
+        self.q_and_a[self.counter][6] = -1
         self.print_question(arg)
         self.each_start_time = datetime.datetime.now()
 
@@ -166,7 +179,7 @@ class Controller(cmd.Cmd):
         last_round_num = self.num
         temp_q_and_a = []
         for i in range(self.num):
-            if self.q_and_a[i][5] >= THRESHOLD_WRONG_COUNT or self.q_and_a[i][6] >= THRESHOLD_THINK_TIME:
+            if self.q_and_a[i][6] >= self.threshold_wrong_count or self.q_and_a[i][7] >= self.threshold_think_time:
                 temp_q_and_a.append(self.q_and_a[i])
         self.num = len(temp_q_and_a)
         round_duration = self.round_end_time - self.round_start_time
@@ -174,25 +187,25 @@ class Controller(cmd.Cmd):
         self.q_and_a = temp_q_and_a
         if self.num > 0:
             self.output('本轮训练完毕,平均每道题用时%s秒,计算错误超过%s次或计算时间超过%s秒的题目共有%s道,题目如下:' % (purple(round_seconds),
-                                                                                                               yellow(THRESHOLD_WRONG_COUNT),
-                                                                                                               yellow(THRESHOLD_THINK_TIME),
+                                                                                                               yellow(self.threshold_wrong_count),
+                                                                                                               yellow(self.threshold_think_time),
                                                                                                                yellow(self.num)))
             self.output('+------------+---------+------------+')
             self.output('|    算式    | 错误次数|计算时间(秒)|')
             self.output('+------------+---------+------------+')
             for i in range(self.num):
-                self.output('| %2s %s %s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][0],
-                                                                            self.q_and_a[i][1],
+                self.output('| %2s %s %s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][1],
                                                                             self.q_and_a[i][2],
-                                                                            self.q_and_a[i][5],
-                                                                            self.q_and_a[i][6]))
+                                                                            self.q_and_a[i][3],
+                                                                            self.q_and_a[i][6],
+                                                                            self.q_and_a[i][7]))
             self.output('+------------+---------+------------+')
         else:
             self.output('本轮训练完毕,平均每道题用时%s秒,计算过程与计算结果全部符合要求' % purple(round_seconds))
         return
 
     def review(self, arg):
-        self.output('再试试刚才那轮中计算错误或时间偏长的题吧')
+        self.output('再试试刚才那轮中计算错误次数过多或思考时间偏长的题吧')
         self.counter = -1
         self.countdown(5)
         self.round_start_time = datetime.datetime.now()
@@ -215,12 +228,7 @@ class Controller(cmd.Cmd):
 
     def do_N(self, arg):
         arg = arg.strip()
-        left_zero_number = 0
-        for i in arg:
-            if i != '0':
-                break
-            left_zero_number += 1
-        arg = arg[left_zero_number:]
+        arg = remove_left_zero(arg)
         if arg == '':
             self.output(red('请输入本次训练的题目数量'))
             return
@@ -266,6 +274,40 @@ class Controller(cmd.Cmd):
             self.output('已把本次训练设为' + purple('20以内') + '的加法或减法')
         return
 
+    def do_W(self, arg):
+        arg = arg.strip()
+        arg = remove_left_zero(arg)
+        if arg == '':
+            self.output(red('请输入本次训练的错误次数重做阈值'))
+            return
+        if not is_nubmer_or_empty_string(arg):
+            self.output(red('请输入数字!'))
+            return
+        elif len(arg) > 3:
+            self.output(red('每次训练的错误次数重做阈值为999次'))
+            return
+        else:
+            self.threshold_wrong_count = int(arg)
+            self.output('已把本次训练的错误次数重做阈值设为%s次' % purple(arg))
+            return
+
+    def do_T(self, arg):
+        arg = arg.strip()
+        arg = remove_left_zero(arg)
+        if arg == '':
+            self.output(red('请输入本次训练的思考超时重做阈值'))
+            return
+        if not is_nubmer_or_empty_string(arg):
+            self.output(red('请输入数字!'))
+            return
+        elif len(arg) > 3:
+            self.output(red('每次训练的思考超时重做阈值为999秒'))
+            return
+        else:
+            self.threshold_think_time = int(arg)
+            self.output('已把本次训练的思考超时重做阈值设为%s秒' % purple(arg))
+            return
+
     def do_S(self, arg):
         if self.operator == ADDITION:
             operator = '加法'
@@ -282,7 +324,12 @@ class Controller(cmd.Cmd):
         self.start = True
         self.num = self.question_num
         self.counter = -1
-        self.output('%s,本次训练是%s道%s的%s题' % (KID_NAME, purple(self.question_num), purple(difficulty), purple(operator)))
+        self.output('%s,本次训练是%s道%s的%s题,如果某道题做错%s次或思考时间超过%s秒轮次结束后将会再次练习' % (KID_NAME,
+                                                                                                      purple(self.question_num),
+                                                                                                      purple(difficulty),
+                                                                                                      purple(operator),
+                                                                                                      purple(self.threshold_wrong_count),
+                                                                                                      purple(self.threshold_think_time)))
         self.output(KID_NAME + ',请稍候,正在准备数据...')
         self.q_and_a = prepare_question(self.question_num, self.operator, self.difficulty)
         self.countdown(5)
@@ -292,7 +339,7 @@ class Controller(cmd.Cmd):
 
     def do_e(self, arg):
         if self.counter is None:
-            self.output(red('目前还没有题目,请使用N/O/D命令设计题目或输入S后回车直接使用默认设置'))
+            self.output(red('目前还没有题目,请使用N/O/D/W/T命令设计题目或输入S后回车直接使用默认设置'))
             return
         if not is_nubmer_or_empty_string(arg):
             self.output(red('请输入数字!'))
@@ -305,16 +352,16 @@ class Controller(cmd.Cmd):
                 self.print_question(arg)
             return
 
-        if int(arg) == self.q_and_a[self.counter][4]:
+        if int(arg) == self.q_and_a[self.counter][5]:
             self.each_end_time = datetime.datetime.now()
             self.do_shell('clear')
             if self.num > 0:
                 self.output(green(KID_NAME + ',你真棒!还剩') + purple(str(self.num - self.counter - 1)) + green('道哦~~'))
             else:
                 self.output(green(KID_NAME + ',你真棒!还剩') + purple(str(self.question_num - self.counter - 1)) + green('道哦~~'))
-            self.q_and_a[self.counter][5] += 1
+            self.q_and_a[self.counter][6] += 1
             each_duration = self.each_end_time - self.each_start_time
-            self.q_and_a[self.counter][6] = each_duration.seconds
+            self.q_and_a[self.counter][7] = each_duration.seconds
             if self.counter + 1 == self.num:
                 self.round_end_time = datetime.datetime.now()
                 self.do_shell('clear')
@@ -327,7 +374,7 @@ class Controller(cmd.Cmd):
             else:
                 self.next_question(self)
         else:
-            self.q_and_a[self.counter][5] += 1
+            self.q_and_a[self.counter][6] += 1
             self.do_shell('clear')
             self.output(red(KID_NAME + ',答错了呦~~再来!'))
             self.print_question(arg)
@@ -342,6 +389,8 @@ class Controller(cmd.Cmd):
 N(umber)            -- N number (例如: N 10) (解释: 本次训练题量设为10道)
 O(perator)          -- O [a(ddition)|s(ubtraction)|m(ixture)] (例如: O a) (解释: 本次训练类型设为加法)
 D(ifficulty)        -- D [e(asy)|h(ard)] (例如: D e) (解释: 本次训练难度设为10以内)
+W(rong count)       -- W number (例如: W 1) (解释: 本次训练错误次数重做阈值设为1次)
+T(hink time)        -- T number (例如: T 10) (解释: 本次训练思考超时重做阈值设为10秒)
 S(tart)             -- """)
 
     def default(self, arg):
