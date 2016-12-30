@@ -91,12 +91,12 @@ def add(difficulty):
 def subtract(difficulty):
     while True:
         if difficulty == EASY:
-            a = random.randint(3, 10)
+            a = random.randint(4, 10)
         else:
             a = random.randint(11, 18)
         b = random.randint(2, 9)
         c = a - b
-        if 0 < c < 10:
+        if 1 < c < 10:
             break
     return a, b, c
 
