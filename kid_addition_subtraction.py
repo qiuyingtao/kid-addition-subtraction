@@ -178,7 +178,7 @@ def prepare_question(num, operator, difficulty):
                             break
                     while True:
                         c = random.randint(2, 9)
-                        if c == a or c ==b:
+                        if c == a or c == b:
                             continue
                         d = temp - c
                         if d < 10:
@@ -194,7 +194,7 @@ def prepare_question(num, operator, difficulty):
                             break
                     while True:
                         c = random.randint(2, 9)
-                        if c == a or c ==b:
+                        if c == a or c == b:
                             continue
                         d = temp + c
                         if d > 10:
