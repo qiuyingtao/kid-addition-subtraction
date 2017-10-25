@@ -174,7 +174,7 @@ def prepare_question(num, operator, difficulty):
                         a = random.randint(2, 9)
                         b = random.randint(2, 9)
                         temp = a + b
-                        if 10 < temp < 17:  # 如果 temp 允许等于 17 或 18，a、b 为两个 9 或者一个 9 一个 8，下面的 while 将陷入会死循环
+                        if 10 < temp < 17:  # 如果 temp 允许等于 17 或 18，a、b 为两个 9 或者一个 9 一个 8，下面的 while 将会陷入死循环
                             break
                     while True:
                         c = random.randint(2, 9)
@@ -190,7 +190,7 @@ def prepare_question(num, operator, difficulty):
                         a = random.randint(11, 18)
                         b = random.randint(2, 9)
                         temp = a - b
-                        if 2 < temp < 10:  # 如果 temp 允许等于 2，a 为 11，b 为 9，下面的 while 将陷入会死循环
+                        if 2 < temp < 10:  # 如果 temp 允许等于 2，a 为 11，b 为 9，下面的 while 将会陷入死循环
                             break
                     while True:
                         c = random.randint(2, 9)
