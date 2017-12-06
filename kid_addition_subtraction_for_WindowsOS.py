@@ -209,7 +209,6 @@ class Controller(cmd.Cmd):
         if stuff is not None:
             if isinstance(stuff, unicode):
                 stuff = stuff.encode('utf-8')
-                #stuff = stuff.decode('utf-8').encode('gbk')
             self.stdout.write(stuff.decode('utf-8').encode('gbk') + '\n')
 
     def print_question(self, arg):
