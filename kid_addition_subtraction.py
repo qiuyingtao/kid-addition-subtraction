@@ -365,53 +365,57 @@ class Controller(cmd.Cmd):
                                                                                                                   yellow(self.threshold_think_time),
                                                                                                                   yellow(self.num)))
             if self.difficulty == EASY or self.difficulty == NORMAL:
-                self.output('+------------+---------+------------+')
-                self.output('|    算式    | 错误次数|计算时间(秒)|')
-                self.output('+------------+---------+------------+')
+                self.output('+-----+------------+---------+------------+')
+                self.output('| 序号|    算式    | 错误次数|计算时间(秒)|')
+                self.output('+-----+------------+---------+------------+')
                 for i in range(self.num):
-                    self.output('| %2s %s %s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][1],
-                                                                                self.q_and_a[i][2],
-                                                                                self.q_and_a[i][3],
-                                                                                self.q_and_a[i][6],
-                                                                                self.q_and_a[i][7]))
-                self.output('+------------+---------+------------+')
-            elif self.difficulty == HARD:
-                self.output('+--------------+---------+------------+')
-                self.output('|     算式     | 错误次数|计算时间(秒)|')
-                self.output('+--------------+---------+------------+')
-                for i in range(self.num):
-                    self.output('| %3s %s %2s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][1],
-                                                                                 self.q_and_a[i][2],
-                                                                                 self.q_and_a[i][3],
-                                                                                 self.q_and_a[i][6],
-                                                                                 self.q_and_a[i][7]))
-                self.output('+--------------+---------+------------+')
-            elif self.difficulty == NIGHTMARE:
-                self.output('+----------------+---------+------------+')
-                self.output('|      算式      | 错误次数|计算时间(秒)|')
-                self.output('+----------------+---------+------------+')
-                for i in range(self.num):
-                    self.output('| %2s %s %s %s %s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][1],
+                    self.output('| %3s | %2s %s %s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][0],
+                                                                                      self.q_and_a[i][1],
                                                                                       self.q_and_a[i][2],
                                                                                       self.q_and_a[i][3],
-                                                                                      self.q_and_a[i][4],
-                                                                                      self.q_and_a[i][5],
-                                                                                      self.q_and_a[i][8],
-                                                                                      self.q_and_a[i][9]))
-                self.output('+----------------+---------+------------+')
-            else:
-                self.output('+-------------------+---------+------------+')
-                self.output('|       算 式       | 错误次数|计算时间(秒)|')
-                self.output('+-------------------+---------+------------+')
+                                                                                      self.q_and_a[i][6],
+                                                                                      self.q_and_a[i][7]))
+                self.output('+-----+------------+---------+------------+')
+            elif self.difficulty == HARD:
+                self.output('+-----+--------------+---------+------------+')
+                self.output('| 序号|     算式     | 错误次数|计算时间(秒)|')
+                self.output('+-----+--------------+---------+------------+')
                 for i in range(self.num):
-                    self.output('| %3s %s %2s %s %2s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][1],
-                                                                                        self.q_and_a[i][2],
-                                                                                        self.q_and_a[i][3],
-                                                                                        self.q_and_a[i][4],
-                                                                                        self.q_and_a[i][5],
-                                                                                        self.q_and_a[i][8],
-                                                                                        self.q_and_a[i][9]))
-                self.output('+-------------------+---------+------------+')
+                    self.output('| %3s | %3s %s %2s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][0],
+                                                                                       self.q_and_a[i][1],
+                                                                                       self.q_and_a[i][2],
+                                                                                       self.q_and_a[i][3],
+                                                                                       self.q_and_a[i][6],
+                                                                                       self.q_and_a[i][7]))
+                self.output('+-----+--------------+---------+------------+')
+            elif self.difficulty == NIGHTMARE:
+                self.output('+-----+----------------+---------+------------+')
+                self.output('| 序号|      算式      | 错误次数|计算时间(秒)|')
+                self.output('+-----+----------------+---------+------------+')
+                for i in range(self.num):
+                    self.output('| %3s | %2s %s %s %s %s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][0],
+                                                                                            self.q_and_a[i][1],
+                                                                                            self.q_and_a[i][2],
+                                                                                            self.q_and_a[i][3],
+                                                                                            self.q_and_a[i][4],
+                                                                                            self.q_and_a[i][5],
+                                                                                            self.q_and_a[i][8],
+                                                                                            self.q_and_a[i][9]))
+                self.output('+-----+----------------+---------+------------+')
+            else:
+                self.output('+-----+-------------------+---------+------------+')
+                self.output('| 序号|       算 式       | 错误次数|计算时间(秒)|')
+                self.output('+-----+-------------------+---------+------------+')
+                for i in range(self.num):
+                    self.output('| %3s | %3s %s %2s %s %2s = ? |   %2s    |     %2s     |' % (self.q_and_a[i][0],
+                                                                                              self.q_and_a[i][1],
+                                                                                              self.q_and_a[i][2],
+                                                                                              self.q_and_a[i][3],
+                                                                                              self.q_and_a[i][4],
+                                                                                              self.q_and_a[i][5],
+                                                                                              self.q_and_a[i][8],
+                                                                                              self.q_and_a[i][9]))
+                self.output('+-----+-------------------+---------+------------+')
         else:
             self.output('本轮训练完毕,平均每道题用时%s秒,计算过程与计算结果全部符合要求' % purple(round_seconds))
         return
