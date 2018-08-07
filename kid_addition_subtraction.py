@@ -420,6 +420,7 @@ class Controller(cmd.Cmd):
             self.output('本轮训练完毕,平均每道题用时%s秒,计算过程与计算结果全部符合要求' % purple(round_seconds))
         return
 
+    '''
     def review(self, arg):
         self.output('再试试刚才那轮中计算错误次数过多或思考时间偏长的题吧')
         self.counter = -1
@@ -427,6 +428,7 @@ class Controller(cmd.Cmd):
         self.round_start_time = datetime.datetime.now()
         self.next_question(self)
         return
+    '''
 
     def summary(self, arg):
         self.all_end_time = datetime.datetime.now()
@@ -530,6 +532,12 @@ class Controller(cmd.Cmd):
             self.output('已把本次训练的思考超时重做阈值设为%s秒' % purple(arg))
             return
 
+    def do_C(self, arg):
+        self.counter = -1
+        self.countdown(5)
+        self.round_start_time = datetime.datetime.now()
+        self.next_question(self)
+
     def do_S(self, arg):
         if self.operator == ADDITION:
             operator = '加法'
@@ -608,7 +616,9 @@ class Controller(cmd.Cmd):
                     self.summary(self)
                     return
                 else:
-                    self.review(self)
+                    #self.review(self)
+                    self.output('再试试刚才那轮中计算错误次数过多或思考时间偏长的题吧,按 C 回车继续')
+                    return
             else:
                 self.next_question(self)
         else:
@@ -632,7 +642,8 @@ O(perator)          -- O [a(ddition)|s(ubtraction)|m(ixture)] (例如: O a) (解
 D(ifficulty)        -- D [e(asy)|n(ormal)|h(ard)|(night)m(are)|i(nferno)] (例如: D e) (解释: 本次训练难度设为10以内)
 W(rong count)       -- W number (例如: W 1) (解释: 本次训练错误次数重做阈值设为1次)
 T(hink time)        -- T number (例如: T 10) (解释: 本次训练思考超时重做阈值设为10秒)
-S(tart)             -- """)
+S(tart)             -- 开始答题
+C(ontinue)          -- 一个轮次结束后,继续下一个轮次""")
 
     def default(self, arg):
         return self.do_help(arg)
