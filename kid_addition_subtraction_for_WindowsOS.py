@@ -285,6 +285,9 @@ class Controller(cmd.Cmd):
         self.round_end_time = None
         self.each_start_time = None
         self.each_end_time = None
+        self.pause_start_time = None
+        self.sum_pause_time = 0
+        self.pause = False
         self.counter = None
         self.num = self.question_num
         self.start = False
@@ -409,7 +412,7 @@ class Controller(cmd.Cmd):
     def summary(self, arg):
         self.all_end_time = datetime.datetime.now()
         all_duration = self.all_end_time - self.all_start_time
-        all_seconds = all_duration.seconds
+        all_seconds = all_duration.seconds - self.sum_pause_time
         self.output('本次训练结束,总共花了%s分%s秒' % (all_seconds/60, all_seconds%60))
         self.start = False
         return
@@ -509,8 +512,13 @@ class Controller(cmd.Cmd):
             return
 
     def do_C(self, arg):
+        if not self.pause:
+            self.print_question(arg)
+            return
         self.counter = -1
+        self.pause = False
         self.countdown(5)
+        self.sum_pause_time = self.sum_pause_time + (datetime.datetime.now() - self.pause_start_time).seconds
         self.round_start_time = datetime.datetime.now()
         self.next_question(self)
 
@@ -547,16 +555,23 @@ class Controller(cmd.Cmd):
         self.countdown(5)
         self.all_start_time = datetime.datetime.now()
         self.round_start_time = self.all_start_time
+        self.sum_pause_time = 0
         self.next_question(self)
 
     def do_e(self, arg):
         if self.counter is None:
             self.output('目前还没有题目,请使用N/O/D/W/T命令设计题目或输入S后回车直接使用默认设置')
             return
+        if self.pause:
+            self.output('请输入C后回车继续答题')
+            return
         if not is_nubmer_or_empty_string(arg):
             self.output('请输入数字!')
             if self.start:
                 self.print_question(arg)
+            return
+        if not self.start:
+            self.output('请输入S后回车答题或使用N/O/D/W/T命令重新设计题目')
             return
         if arg == '':
             self.output('请输入答案!')
@@ -592,6 +607,8 @@ class Controller(cmd.Cmd):
                 else:
                     #self.review(self)
                     self.output('再试试刚才那轮中计算错误次数过多或思考时间偏长的题吧,按 C 回车继续')
+                    self.pause = True
+                    self.pause_start_time = datetime.datetime.now()
                     return
             else:
                 self.next_question(self)
@@ -605,7 +622,7 @@ class Controller(cmd.Cmd):
         return
 
     def do_help(self, arg):
-        if self.start:
+        if self.start and not self.pause:
             self.print_question(arg)
             return
 
